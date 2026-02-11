@@ -67,8 +67,18 @@ if img_file is not None:
     )
 
     # 信頼度バー
-    st.progress(int(top[2] * 100))
-    st.caption("予測の信頼度")
+
+
+    confidence = top[2]
+
+    st.progress(int(confidence * 100))
+
+    if confidence > 0.8:
+        st.caption("😊 高い信頼度です")
+    elif confidence > 0.5:
+        st.caption("🤔 中程度の信頼度です")
+    else:
+        st.caption("😟 信頼度が低いです")
 
     st.divider()
 
