@@ -93,28 +93,42 @@ if img_file is not None:
             st.write(
                 f"{rank_icons[i]} **{i+1}位：{label}**　{prob} %"
             )
-    # =========================
-    # CSVダウンロード
-    # =========================
-    st.subheader("CSVダウンロード")
-    df = pd.DataFrame({
-    "ラベル": [r[0] for r in results],
-    "確率(%)": [r[2] * 100 for r in results]
-    })
 
-    csv = df.to_csv(index=False).encode("utf-8-sig")
-    st.download_button(
-        "結果をCSVでダウンロード",
-        csv,
-        "prediction_result.csv",
-        "text/csv"
-    )
 
 
     # =========================
-    # グラフ
+    # グラフ + CSV（2カラム）
     # =========================
+    col1, col2 = st.columns([1, 1])
 
+    with col1:
+        st.subheader("グラフ")
+
+        pie_labels = [result[1] for result in results[:n_top]]
+        pie_labels.append("others")
+        pie_probs = [result[2] for result in results[:n_top]]
+        pie_probs.append(sum([result[2] for result in results[n_top:]]))
+        fig, ax = plt.subplots()
+        wedgeprops={"width":0.3, "edgecolor":"white"}
+        textprops = {"fontsize":6}
+        ax.pie(pie_probs, labels=pie_labels, counterclock=False, startangle=90,
+                textprops=textprops, autopct="%.2f", wedgeprops=wedgeprops)  # 円グラフ
+        st.pyplot(fig)
+
+    with col2:
+        st.subheader("CSVダウンロード")
+        df = pd.DataFrame({
+        "ラベル": [r[0] for r in results],
+        "確率(%)": [r[2] * 100 for r in results]
+        })
+
+        csv = df.to_csv(index=False).encode("utf-8-sig")
+        st.download_button(
+            "結果をCSVでダウンロード",
+            csv,
+            "prediction_result.csv",
+            "text/csv"
+        )
 
 else:
     st.info("サイドバーから画像を入力してください")
