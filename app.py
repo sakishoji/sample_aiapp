@@ -4,6 +4,8 @@ import streamlit as st
 import matplotlib.pyplot as plt
 from PIL import Image
 from model import predict
+import pandas as pd
+
 
 # =========================
 # ページ設定
@@ -91,6 +93,28 @@ if img_file is not None:
             st.write(
                 f"{rank_icons[i]} **{i+1}位：{label}**　{prob} %"
             )
+    # =========================
+    # CSVダウンロード
+    # =========================
+    st.subheader("CSVダウンロード")
+    df = pd.DataFrame({
+    "ラベル": [r[0] for r in results],
+    "確率(%)": [r[2] * 100 for r in results]
+    })
+
+    csv = df.to_csv(index=False).encode("utf-8-sig")
+    st.download_button(
+        "結果をCSVでダウンロード",
+        csv,
+        "prediction_result.csv",
+        "text/csv"
+    )
+
+
+    # =========================
+    # グラフ
+    # =========================
+
 
 else:
     st.info("サイドバーから画像を入力してください")
